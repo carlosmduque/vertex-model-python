@@ -382,6 +382,7 @@ def collapse_edge(tissue,edge_id,on_midpoint=True):
         
         # dbonds_faces = np.setdiff1d(dbonds_faces,two_sided_faces)
         
+        
     # We get the faces sharing vert_ID_stay and update their basic geometry.
     
     # edges_in = tissue.edge_df[tissue.edge_df['v_in_id'] == vert_ID_stay]
