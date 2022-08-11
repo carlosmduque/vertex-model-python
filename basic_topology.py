@@ -232,73 +232,6 @@ def boundary_to_interior_t1_rearrangement(tissue,edge_id,scale_factor=0.1):
     
     return
 
-# def pure_boundary_t1_rearrangement(tissue,edge_id):
-    
-#     boundary_face_id = tissue.edge_df.loc[edge_id,'dbond_face']
-
-#     face_dbonds_ordered = np.array(tissue.face_dbonds.loc[boundary_face_id])
-
-#     is_interior_dbonds = \
-#         (tissue.edge_df.loc[face_dbonds_ordered,'is_interior']==False).values
-
-
-#     first_false_position = np.where(is_interior_dbonds == False)[0][0]
-
-#     is_interior_dbonds = np.roll(is_interior_dbonds,-first_false_position)
-#     face_dbonds_ordered = np.roll(face_dbonds_ordered,-first_false_position)
-
-#     face_boundary_dbonds = face_dbonds_ordered[is_interior_dbonds]
-
-#     dbonds_number = len(face_boundary_dbonds)
-
-#     position_dbond_id = np.where(face_boundary_dbonds == edge_id)[0][0]
-
-#     if (dbonds_number - (position_dbond_id + 1)) == 0:
-#         l_dbond_id = tissue.edge_df.loc[edge_id,'left_dbond']
-#         lc_dbond_id = tissue.edge_df.loc[l_dbond_id,'conj_dbond']
-#         lcl_dbond_id = tissue.edge_df.loc[lc_dbond_id,'left_dbond']
-        
-#         add_vertex_to_edge(tissue,lcl_dbond_id)
-        
-#         # print('This is the last boundary bond')
-        
-#     collapse_edge(tissue,edge_id)
-    
-    
-#     return
-
-# def pure_boundary_t1_rearrangement(tissue,edge_id,scale_factor=0.1):
-    
-#     boundary_face_id = tissue.edge_df.loc[edge_id,'dbond_face']
-
-#     face_dbonds_ordered = np.array(tissue.face_dbonds.loc[boundary_face_id])
-
-#     is_interior_dbonds = \
-#         (tissue.edge_df.loc[face_dbonds_ordered,'is_interior']==False).values
-
-
-#     first_false_position = np.where(is_interior_dbonds == False)[0][0]
-
-#     is_interior_dbonds = np.roll(is_interior_dbonds,-first_false_position)
-#     face_dbonds_ordered = np.roll(face_dbonds_ordered,-first_false_position)
-
-#     face_boundary_dbonds = face_dbonds_ordered[is_interior_dbonds]
-
-#     dbonds_number = len(face_boundary_dbonds)
-
-#     position_dbond_id = np.where(face_boundary_dbonds == edge_id)[0][0]
-    
-
-#     position_bool = (
-#             (position_dbond_id == dbonds_number - 1) |
-#             (position_dbond_id == 0)
-#                     )
-    
-#     if position_bool:
-#         boundary_to_interior_t1_rearrangement(
-#             tissue,edge_id,scale_factor=scale_factor)
-    
-#     return
 
 def pure_boundary_t1_rearrangement(tissue,edge_id,scale_factor=0.1):
       
@@ -365,12 +298,7 @@ def collapse_edge(tissue,edge_id,on_midpoint=True):
     if False in is_interior:
         tissue.vert_df.loc[vert_ID_stay,'is_interior'] = False
         
-    # We look for two sides faces which must be removed.
-    # sub_face_df = tissue.face_df.loc[dbonds_faces].copy()
-    
-    # sub_face_df = tissue.face_df.loc[dbonds_faces]
-    # two_sided_faces = sub_face_df.loc[sub_face_df['num_sides'] == 2,'id'].values
-    
+    # We look for two sides faces which must be removed.  
     
     two_sided_faces = tissue.face_df.loc[tissue.face_df['num_sides'] == 2,
                                          'id'].values   
@@ -541,13 +469,11 @@ def delete_cell(tissue,face_id,remove_boundary=True):
         
         dbonds_faces = np.setdiff1d(dbonds_faces,two_sided_faces)
            
-    # print(dbonds_faces)
+   
     tissue.update_tissue_geometry(face_list=dbonds_faces)
     
     return
 
-# def split_vertex(tissue,vert_id,scale_factor = 1.0,random_face=True,
-#                  preferred_face=None):
 def split_vertex(tissue,vert_id,scale_factor = 0.1,preferred_face='random',
                  vector_shift=[],return_vert_ids=False):
     
@@ -573,23 +499,14 @@ def split_vertex(tissue,vert_id,scale_factor = 0.1,preferred_face='random',
     edges_in = \
         tissue.edge_df.loc[tissue.edge_df['v_in_id'] == vert_id,'id'].values
         
-    # edges_out = \
-    #     tissue.edge_df.loc[tissue.edge_df['v_out_id'] == vert_id,'id'].values
+    
     edges_out = \
         tissue.edge_df.loc[edges_in,'left_dbond'].values
     
-    # vert_faces = \
-    #     tissue.edge_df.loc[tissue.edge_df['v_in_id'] == vert_id,
-    #                        'dbond_face'].values
+    
     vert_faces = \
         tissue.edge_df.loc[edges_in,'dbond_face'].values
     
- 
-    # A particular face will be pulled away from the vertex. 
-    # if random_face:
-    #     face_to_pull = np.random.randint(len(vert_faces))
-    # else:
-    #     face_to_pull = 0
     
     if preferred_face == 'random':
         face_to_pull = np.random.randint(len(vert_faces))
@@ -653,8 +570,6 @@ def split_vertex(tissue,vert_id,scale_factor = 0.1,preferred_face='random',
     get_face_ordered_dbonds(tissue,face_list=face_list)
     
     face_list = [pulled_face_id,c_face_dbond_in,c_face_dbond_out]
-    
-    # tissue.update_areas_perimeters_centroids(face_list=face_list)
     
     tissue.update_tissue_geometry(face_list=face_list)
     
@@ -803,7 +718,7 @@ def resolve_high_order_vertex(tissue,vert_id,scale_factor = 0.1,
               
     
     return
-# def add_vertex_to_edge(tissue,edge_id,v_pos=[]):
+
 def add_vertex_to_edge(tissue,edge_id,v_pos=[],v_offset=0.0):
 
     v_indices = tissue.edge_df.loc[edge_id,['v_out_id','v_in_id']].values
@@ -812,10 +727,6 @@ def add_vertex_to_edge(tissue,edge_id,v_pos=[],v_offset=0.0):
     else:
         new_vert_pos = tissue.vert_df.loc[v_indices,['x','y']].mean().values
 
-   
-    # edge_length = tissue.edge_df.loc[edge_id,'length']
-    # new_vert_pos += edge_length*v_offset*np.random.rand(len(new_vert_pos))
-    # new_vert_pos += edge_length*v_offset*np.ones(len(new_vert_pos))
         
     new_vert_id = tissue.num_vertices
     tissue.num_vertices += 1
@@ -919,8 +830,6 @@ def get_intersection_points_for_division(tissue,face_id,dbonds_list,
     
     return intersection_points
     
-
-# def divide_cell(tissue,face_id,division_angle=None,v_offset=0.0):
 def divide_cell(tissue,face_id,division_angle=None,delete_tri_cell=False,
                                         through_centroid=True,v_offset=0.0):
     
@@ -1051,13 +960,10 @@ def remove_two_fold_internal_vertices(tissue):
             r_dbonds = tissue.edge_df.loc[
                             dbonds_out,'right_dbond'].values
             
-            # print(dbonds_in,dbonds_out)
-            # print(l_dbonds,r_dbonds)
 
             dbonds_in_v_out_id = tissue.edge_df.loc[
                             dbonds_in,'v_out_id'].values
             
-            # print(dbonds_in_v_out_id)
             
             tissue.edge_df.loc[l_dbonds,'right_dbond'] = r_dbonds
             tissue.edge_df.loc[r_dbonds,'left_dbond'] = l_dbonds
@@ -1068,8 +974,6 @@ def remove_two_fold_internal_vertices(tissue):
             face_list = tissue.edge_df.loc[dbonds_out,'dbond_face'].values
             
             tissue.face_df.loc[face_list,'num_sides'] -= 1
-            # print(face_list)
-            
             
             tissue.vert_df.drop(v_id,inplace=True)
             tissue.edge_df.drop(dbonds_out,inplace=True)
@@ -1109,88 +1013,3 @@ def round_off_boundary(tissue):
     
     return
 #   ------------------------------------------------------------------------------------------------------
-#   This are a bunch of deprecated functions that we don't need to use.
-
-# def reconnect_T1_faces(tissue,dbonds,cl_dbonds):
-
-#     # The faces of dbonds change after the T1 transition.
-#     dbonds_faces = tissue.edge_df.iloc[dbonds]['dbond_face'].values
-#     cl_dbonds_faces = tissue.edge_df.iloc[cl_dbonds]['dbond_face'].values
-#     tissue.edge_df.loc[dbonds,'dbond_face'] = cl_dbonds_faces
-    
-#     face_dbond_pairs = zip(dbonds_faces,dbonds)  
-#     face_dbonds_new = [
-#             delete_integer_from_nparray(tissue.face_dbonds[face_id],edge_id)
-#             for face_id,edge_id in face_dbond_pairs]
-
-#     tissue.face_dbonds.iloc[dbonds_faces] = face_dbonds_new
-
-#     face_cl_dbonds = tissue.face_dbonds.iloc[cl_dbonds_faces].values
-#     len_cl_faces = tissue.face_df.iloc[cl_dbonds_faces]['num_sides'].values
-
-#     cl_dbonds_positions = [
-#                         np.argwhere(dbonds_list == dbond_ID)[0,0] for
-#                         dbonds_list, dbond_ID in
-#                         zip(face_cl_dbonds,cl_dbonds)] 
-
-#     dbonds_positions = [(dbond_pos+1)%len_face for
-#                         dbond_pos,len_face in
-#                         zip(cl_dbonds_positions,len_cl_faces)]
-
-#     face_cl_dbonds_new = [np.insert(dbonds_list,dbond_pos,dbond_ID) for
-#                         dbonds_list,dbond_pos,dbond_ID in
-#                         zip(face_cl_dbonds,dbonds_positions,dbonds)]
-
-#     tissue.face_dbonds.iloc[cl_dbonds_faces] = face_cl_dbonds_new
-
-#     tissue.face_df.loc[dbonds_faces,'num_sides'] -= 1
-#     tissue.face_df.loc[cl_dbonds_faces,'num_sides'] += 1
-
-#     return
-
-
-""" NOTE: Don't delete the commented block from below. It works fine but it requires
-        that we reindex many vertices and edges. The idea of assigning a unique id is to
-        avoid having to reindex. This of course means that we need to keep working with 
-        .loc instead of .iloc given the label oriented nature of the former one.
-"""
-    
-# for _, (bond_id,face_id) in enumerate(zip(c_dbonds, dbonds_faces)):
-#     dbond_list = tissue.face_dbonds.loc[face_id]
-#     tissue.face_dbonds.loc[face_id] = \
-#                 delete_integer_from_nparray(dbond_list,bond_id)   
-
-# tissue.vert_df.reset_index(drop=True,inplace=True)
-# tissue.edge_df.reset_index(drop=True,inplace=True)
-
-# old_vertex_IDs = tissue.vert_df['id'].values
-# vertex_dict = list_to_range_dict(old_vertex_IDs)
-# vertex_dict[vert_ID_drop] = vert_ID_stay
-
-# remaining_edge_IDs = tissue.edge_df['id'].values
-# edge_dict = list_to_range_dict(remaining_edge_IDs)
-
-# edge_dict[-1] = -1
-# for dbond in dbonds:
-#     edge_dict[dbond] = -1 
-
-# tissue.vert_df['id'] = tissue.vert_df['id'].map(vertex_dict)
-
-# cols = ['v_out_id','v_in_id']
-# for col in cols:
-#     tissue.edge_df[col] = tissue.edge_df[col].map(vertex_dict)
-
-# cols = ['id','left_dbond','right_dbond','conj_dbond']
-# for col in cols:
-#     tissue.edge_df[col] = tissue.edge_df[col].map(edge_dict)
-
-# tissue.face_dbonds = \
-#     tissue.face_dbonds.apply(dict_to_array,dictionary=edge_dict)
-
-# get_face_ordered_dbonds(tissue, face_list=dbonds_faces)
-
-# remaining_vertex_IDs = tissue.vert_df['id'].values
-# vertex_dict = list_to_range_dict(old_vertex_IDs)
-# vertex_dict[vert_ID_drop] = vert_ID_stay
-
-# tissue.update_areas_perimeters_centroids(face_list=dbonds_faces)
