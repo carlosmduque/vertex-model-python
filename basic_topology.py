@@ -380,13 +380,6 @@ def collapse_edge(tissue,edge_id,on_midpoint=True):
             delete_two_sided_face(tissue,two_face_id)
             remove_two_fold_internal_vertices(tissue)
         
-        # dbonds_faces = np.setdiff1d(dbonds_faces,two_sided_faces)
-         
-    # We get the faces sharing vert_ID_stay and update their basic geometry.
-    
-    # edges_in = tissue.edge_df[tissue.edge_df['v_in_id'] == vert_ID_stay]
-    # edges_in = tissue.edge_df[tissue.edge_df['v_in_id'] == vert_ID_stay].copy()
-    # vert_faces = edges_in['dbond_face'].values
     
     vert_faces = tissue.edge_df.loc[tissue.edge_df['v_in_id'] == vert_ID_stay
                                     ,'dbond_face'].values 
@@ -399,14 +392,6 @@ def collapse_edge(tissue,edge_id,on_midpoint=True):
 def delete_two_sided_face(tissue,face_id):
     # sub_edge_df = tissue.edge_df[tissue.edge_df['dbond_face'] == face_id]
     
-    # f_dbonds = sub_edge_df['id'].values
-    # c_dbonds = sub_edge_df['conj_dbond'].values
-    
-    # f_dbonds = tissue.edge_df.loc[
-    #                 tissue.edge_df['dbond_face'] == face_id,'id'].values
-    
-    # c_dbonds = tissue.edge_df.loc[
-    #             tissue.edge_df['dbond_face'] == face_id,'conj_dbond'].values
     
     f_dbonds = tissue.face_dbonds.loc[face_id]
     c_dbonds = tissue.edge_df.loc[f_dbonds,'conj_dbond'].values
@@ -429,8 +414,6 @@ def delete_two_sided_face(tissue,face_id):
 
 def delete_boundary_face(tissue,face_id):
     
-    # sub_edge_df = tissue.edge_df[tissue.edge_df['dbond_face'] == face_id]
-    # c_dbonds = sub_edge_df['conj_dbond'].values
     
     f_dbonds = tissue.face_dbonds.loc[face_id]
     c_dbonds = tissue.edge_df.loc[f_dbonds,'conj_dbond'].values
@@ -478,23 +461,13 @@ def delete_cell(tissue,face_id,remove_boundary=True):
     """
 
     centroid = tissue.face_df.loc[face_id,['x','y']]
-    # sub_edge_df = tissue.edge_df[tissue.edge_df['dbond_face'] == face_id]
-      
-    # bond_pairs = sub_edge_df[['id','conj_dbond']].values
     
-    # c_dbonds = bond_pairs[:,1]
     
     f_dbonds = tissue.face_dbonds.loc[face_id]
     c_dbonds = tissue.edge_df.loc[f_dbonds,'conj_dbond'].values
     
     bond_pairs = np.dstack((f_dbonds,c_dbonds))
     
-    
-    # if -1 in c_dbonds:
-    #     warnings.warn(
-    #         f"The cell with ID: {face_id} is located at the boundary."
-    #         f"Boundary cells are not implemented yet.")
-    #     return
     
     boundary_bool = -1 in c_dbonds and remove_boundary
     if boundary_bool:
@@ -557,10 +530,6 @@ def delete_cell(tissue,face_id,remove_boundary=True):
         tissue.face_dbonds.loc[neigh_face_id] = \
                     delete_integer_from_nparray(dbond_list,bond_id)   
 
-    # We look for two sides faces which must be removed.
-    # sub_face_df = tissue.face_df.loc[dbonds_faces]
-    # sub_face_df = tissue.face_df.loc[dbonds_faces].copy()
-    # two_sided_faces = sub_face_df[sub_face_df['num_sides'] == 2].index.values
     
     two_sided_faces = tissue.face_df.loc[tissue.face_df['num_sides'] == 2,
                                          'id'].values
