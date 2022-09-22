@@ -384,7 +384,8 @@ def vertex_stability(tissue,vert_id,gamma_0=0.12,
     rotated_side_vectors = \
                 np.dstack((-side_vectors_out[:,1],side_vectors_out[:,0]))[0]
     
-    dbonds_out_lengths = tissue.edge_df.loc[dbonds_out,'length'].values
+    # dbonds_out_lengths = tissue.edge_df.loc[dbonds_out,'length'].values
+    dbonds_out_lengths = tissue.edge_df.loc[dbonds_out,'length'].values + 1e-8
 
     unit_side_vectors_out = side_vectors_out/dbonds_out_lengths[:,None]
     
@@ -427,7 +428,8 @@ def vertex_stability(tissue,vert_id,gamma_0=0.12,
     preferred_face = dbond_faces[preferred_index]
     preferred_direction = pulling_forces[preferred_index]
     
-    preferred_direction /= np.linalg.norm(preferred_direction)
+    # preferred_direction /= np.linalg.norm(preferred_direction)
+    preferred_direction /= (np.linalg.norm(preferred_direction) + 1e-8)
     
     if new_dbond_length == 'default':
         preferred_direction *= 10*tissue.t1_cutoff
