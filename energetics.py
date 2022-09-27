@@ -4,7 +4,7 @@ import pandas as pd
 from  basic_topology import *
 
 from utilities import find_ordered_vertex_dbonds
-# from basic_topology import add_triangular_face_at_boundary,delete_cell
+from basic_topology import add_triangular_face_at_boundary,delete_cell
 
 def area_energy(tissue):
     cell_areas = tissue.face_df['area']
