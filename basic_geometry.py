@@ -181,6 +181,8 @@ def pol_centroid(vert_positions, return_area=False):
 
     determinant_array = x * np.roll(y,-1) - np.roll(x,-1) * y
     area = 0.5 * np.sum(determinant_array)
+    
+    area += 1e-6
 
     c_x = (1/(6*area)) * np.sum((x + np.roll(x,-1)) * determinant_array)
     c_y = (1/(6*area)) * np.sum((y + np.roll(y,-1)) * determinant_array)  
@@ -258,7 +260,7 @@ def vertex_to_centroid(tissue,vert_id,face_id,
 
     unit_vector_to_centroid = face_centroid - vert_position
     vert_to_centroid_distance = np.linalg.norm(unit_vector_to_centroid)
-    unit_vector_to_centroid /= vert_to_centroid_distance
+    unit_vector_to_centroid /= vert_to_centroid_distance + 1e-8
     
     displacement_distance = scale_factor * vert_to_centroid_distance
   
@@ -298,7 +300,7 @@ def line_axis_intersection_point(points,origin=np.array([[0, 0]]),
     y_intercepts = translated_points[:,1][:,1] - \
                                     slope * translated_points[:,1][:,0]
     
-    ratio = y_intercepts/(axis_slope - slope)
+    ratio = y_intercepts/(axis_slope - slope + 1e-8)
     
     intersection_points_x = ratio
     intersection_points_y = axis_slope*ratio
