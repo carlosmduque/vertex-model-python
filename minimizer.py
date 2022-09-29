@@ -2,22 +2,14 @@
 
 """
 import numpy as np
-import logging
-from itertools import count
-
-# from scipy import optimize
-# from .. import config
-# from ..collisions import auto_collisions
-# from ..topology import auto_t1, auto_t3
-
-# from .base import TopologyChangeError, set_pos
+# import logging
 
 from scipy.optimize import minimize, OptimizeResult
 
 from basic_topology import *
 from topology_triggers import *
 
-log = logging.getLogger(__name__)
+# log = logging.getLogger(__name__)
 
 MAX_ITER = 100
 
@@ -83,18 +75,6 @@ class TissueMinimizer:
         self.method = minimization_method
         self.grad_tol = gtol
 
-    # def find_energy_min(self,**minimize_kw):
-               
-    #     x0_1d = self.tissue.vert_df[['x','y']].values.flatten()
-        
-    #     self.res = minimize(self._calc_energy_and_update,x0_1d,
-    #                 args=(self.tissue),method='CG',
-    #                 jac=self._calc_gradient)
-        
-        
-    #     self.tissue.update_tissue_geometry()
-
-    #     return
     
     def find_energy_min(self,**minimize_kw):
                
@@ -134,13 +114,3 @@ class TissueMinimizer:
         return self.gradient(tissue)
     
     
-    
-    
-# def gradient_descent(gradient, start, learn_rate, tissue, n_iter=50, tolerance=1e-06):
-#     vector = start
-#     for _ in range(n_iter):
-#         diff = -learn_rate * gradient(vector,tissue)
-#         if np.all(np.abs(diff) <= tolerance):
-#             break
-#         vector += diff
-#     return vector

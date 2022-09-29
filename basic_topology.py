@@ -12,7 +12,8 @@ from math import pi
 
 from basic_geometry import (pol_centroid,pol_perimeter,line_axis_intersection_point)
 
-from energetics import vertex_stability
+# from energetics import vertex_stability
+# from vertex_stability import vertex_stability
 
 def set_vertex_topology(tissue):
     """[summary]
@@ -78,34 +79,7 @@ def rotate_T1_vertices(tissue,edge_id,preferred_length=None):
 
     tissue.vert_df.loc[vert_IDs,['x','y']] = new_end_points_positions
     
-    return
-
-# def t1_able_edges(tissue):
-    
-#     v_id_out,v_id_in = tissue.edge_df['v_out_id'],tissue.edge_df['v_in_id']
-
-#     valid_T1_edges = (tissue.vert_df.loc[v_id_out,'is_interior'].values & 
-#                 tissue.vert_df.loc[v_id_in,'is_interior'].values)
-
-    
-#     t1_edges_IDs = tissue.edge_df.loc[valid_T1_edges,'id']
-#     t1_conj_edges_IDs = tissue.edge_df.loc[t1_edges_IDs,'conj_dbond']
-    
-#     t1_edges_face_IDs = tissue.edge_df.loc[t1_edges_IDs,'dbond_face']
-#     t1_conj_edges_face_IDs = \
-#                     tissue.edge_df.loc[t1_conj_edges_IDs,'dbond_face']
-    
-#     t1_edges_face_num_sides = \
-#                         tissue.face_df.loc[t1_edges_face_IDs,'num_sides']
-#     t1_conj_edges_face_num_sides = \
-#                     tissue.face_df.loc[t1_conj_edges_face_IDs,'num_sides']
-
-#     t1_edges_face_criterion = (t1_edges_face_num_sides.values > 3) & \
-#                                     (t1_conj_edges_face_num_sides.values > 3)
-
-#     t1_edges_IDs = t1_edges_IDs[t1_edges_face_criterion].values
-      
-#     return t1_edges_IDs    
+    return   
 
 def rewire_left_and_right_edges(tissue,dbonds_list,left_dbonds_list):
     """[summary]
@@ -690,34 +664,6 @@ def split_boundary_vertex(tissue,vert_id,scale_factor = 0.1,
     recalculate_vertex_topology(tissue,dbond_vert_ids[1])
     
     return 
-
-def resolve_high_order_vertex(tissue,vert_id,scale_factor = 0.1,
-                                preferred_face='stable'):
-    
-    is_interior = tissue.vert_df.loc[vert_id,'is_interior']
-    
-    if preferred_face == 'stable':
-        pulled_face_id, vector_shift = vertex_stability(tissue,vert_id)       
-    else:
-        pulled_face_id = 'random'
-        vector_shift=[]       
-    
-    if is_interior:
-        split_vertex(tissue,vert_id,
-                        scale_factor=scale_factor,
-                        preferred_face=pulled_face_id,
-                        vector_shift=vector_shift)
-    else:
-        if pulled_face_id not in tissue.face_df['id']:
-            pulled_face_id = 'ghost'
-        
-        split_boundary_vertex(tissue,vert_id,
-                        scale_factor=scale_factor,
-                        preferred_face=pulled_face_id,
-                        vector_shift=vector_shift)
-              
-    
-    return
 
 def add_vertex_to_edge(tissue,edge_id,v_pos=[],v_offset=0.0):
 
