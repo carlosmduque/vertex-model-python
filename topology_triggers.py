@@ -270,9 +270,11 @@ def find_removable_faces(tissue,delete_tri_cell=False):
     
     return face_list
 
-def collapse_short_tissue_edges(tissue):
+def collapse_short_tissue_edges(tissue,return_number_collapsed_edges=False):
     
     shorts_dbonds_list = find_collapsable_edges(tissue)
+    
+    number_of_collapsed_edges = 0
     
     while len(shorts_dbonds_list) > 0:
         dbond_id = np.random.choice(shorts_dbonds_list)
@@ -280,8 +282,12 @@ def collapse_short_tissue_edges(tissue):
         collapse_edge(tissue,dbond_id)
         shorts_dbonds_list = find_collapsable_edges(tissue)
         print(f"The edge with ID: {dbond_id} was collapsed.")
+        number_of_collapsed_edges += 1
     
-    return
+    if return_number_collapsed_edges:
+        return number_of_collapsed_edges
+    else:
+        return
 
 def t1_able_short_edges(tissue):
     t1_able_ids = t1_able_edges(tissue)
@@ -309,16 +315,24 @@ def t1_short_edges(tissue):
     
     return
 
-def collapse_small_faces(tissue):
+def collapse_small_faces(tissue,return_number_collapsed_faces=False):
+    
     removable_faces = find_removable_faces(tissue)
-    # print(removable_faces)
+    
+    number_of_collapsed_faces = 0
+    
     while len(removable_faces) > 0:
         face_id = removable_faces[0]
-        # print(face_id)
-        # print(tissue.face_df.loc[[face_id]])
+
         delete_cell(tissue,face_id)
         removable_faces = find_removable_faces(tissue)
         print(f"The cell with ID: {face_id} was collapsed.")
+        number_of_collapsed_faces += 1
+        
+    if return_number_collapsed_faces:
+        return number_of_collapsed_faces
+    else:
+        return
         
 def resolve_high_order_vertices(tissue):
     

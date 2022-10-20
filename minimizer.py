@@ -74,6 +74,9 @@ class TissueMinimizer:
         
         self.method = minimization_method
         self.grad_tol = gtol
+        
+        self.number_of_collapsed_edges = 0
+        self.number_of_collapsed_faces = 0
 
     
     def find_energy_min(self,**minimize_kw):
@@ -90,10 +93,14 @@ class TissueMinimizer:
             self.tissue.update_tissue_geometry()
             
             if not self.res.success: 
-                collapse_small_faces(self.tissue)
-                collapse_short_tissue_edges(self.tissue)
+                num_collapsed_faces = collapse_small_faces(self.tissue,
+                                    return_number_collapsed_faces=True)
+                num_collapsed_edges = collapse_short_tissue_edges(self.tissue,
+                                    return_number_collapsed_edges=True)
             
                 self.num_restarts += 1
+                self.number_of_collapsed_edges += num_collapsed_edges
+                self.number_of_collapsed_faces += num_collapsed_faces
                             
 
             if (self.num_restarts == self.max_iters):
