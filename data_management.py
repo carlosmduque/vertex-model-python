@@ -10,14 +10,10 @@ def load_datasets(h5store, data_names=["vert_df", "edge_df", "face_df"]):
         data = {name: store[name] for name in data_names if name in store}
     return data
 
-def save_datasets(h5store, tissue, data_names=["vert_df", "edge_df", "face_df"],
-                  delete_current=False):
+def save_datasets(h5store, tissue, 
+                data_names=["vert_df", "edge_df", "face_df"],mode='w'):
     
-    if delete_current:
-        if os.path.exists(h5store):
-            os.remove(h5store)
-                       
-    with pd.HDFStore(h5store) as store:
+    with pd.HDFStore(h5store,mode=mode) as store:
         for key in data_names:
             store.put(key, getattr(tissue, f"{key}"))
             
