@@ -156,6 +156,52 @@ class Tissue():
                         self.vert_df[self.coord_labels]
 
         self.update_tissue_geometry()
+        
+        return
+        
+    def tissue_area_perimeter(self):
+        
+        tissue_area = self.face_df['area'].sum()
+        tissue_perimeter = self.edge_df.loc[
+                        self.edge_df['is_interior'] == False,'length'].sum()
+        
+        return tissue_area, tissue_perimeter
+    
+    def mean_geometrical_quantities(self,return_std=False):
+        
+        mean_cell_area = self.face_df['area'].mean()
+        mean_cell_perimeter = self.face_df['perimeter'].mean()
+    
+        dbond_conj_dbond_pairs = self.edge_df.loc[
+                    self.edge_df['is_interior'] == True, ['id','conj_dbond']].values
+               
+        unrepeated_interior_edge_indices = np.unique(
+                    np.sort(dbond_conj_dbond_pairs)[:,0])
+        
+        boundary_edge_indices = self.edge_df.loc[
+                    self.edge_df['is_interior'] == False,'id'].values
 
-        return            
+        dbond_indices_unrepeated = np.concatenate(
+                    (unrepeated_interior_edge_indices,boundary_edge_indices))
+        
+        mean_dbond_length = self.edge_df.loc[
+                                    dbond_indices_unrepeated,'length'].mean()
+        
+        mean_geometrical_data = [mean_cell_area,mean_cell_perimeter,
+                                        mean_dbond_length]
+        
+        if return_std:
+            std_cell_area = self.face_df['area'].std(ddof=0)
+            std_cell_perimeter = self.face_df['perimeter'].std(ddof=0)
+            std_dbond_length = self.edge_df.loc[
+                        dbond_indices_unrepeated,'length'].std(ddof=0)
+            
+            std_geometrical_data = [std_cell_area,std_cell_perimeter,
+                                        std_dbond_length]
+            
+            return mean_geometrical_data, std_geometrical_data
+        
+        else:
+            return mean_geometrical_data
+                  
        

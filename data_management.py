@@ -33,3 +33,20 @@ def load_tissue(h5store,normalize_area=False):
     tissue.num_faces = face_df['id'].max() + 1
     
     return tissue
+
+def logging_data(df,data_list,df_file_path=''):
+    
+    idx = len(df)
+    df.loc[idx] = data_list
+    
+    df_row = df.iloc[[-1]]
+
+    
+    if df_file_path != '':
+        if idx == 0:
+            df_row.to_hdf(df_file_path,key='logging_df', mode='w',format='t')
+        else:
+            df_row.to_hdf(df_file_path,key='logging_df', append=True, mode='r+', format='t')
+     
+        
+    return

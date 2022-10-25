@@ -4,6 +4,7 @@ import numpy as np
 import scipy as sp
 
 from scipy.spatial import ConvexHull, cKDTree
+from topology_triggers import find_splittable_vertices
 
 
 def bounding_rectangle(boundary_vertices,return_corners=False):
@@ -206,6 +207,81 @@ def check_possible_intersections(tissue,cells_to_check,nn_per_cell_to_check,cell
             
     return False
 
+def tissue_self_intersect(tissue):
+    cells_to_check, nn_to_check, cell_radii = find_distance_nn(tissue)
+
+    return check_possible_intersections(tissue,cells_to_check,nn_to_check,cell_radii)
+
+def collect_bounding_rectangle_data(tissue):
+    boundary_vertices = tissue.vert_df.loc[
+                tissue.vert_df['is_interior'] == False,['x','y']].values
 
 
+    minor_length, major_length, major_length_angle = \
+                        bounding_rectangle(boundary_vertices)
+    
+    aspect_ratio = minor_length/major_length
+    
+    return minor_length, major_length, aspect_ratio, major_length_angle
 
+def high_order_vertices_remaining(tissue):
+    splittable_vertices = find_splittable_vertices(tissue,vertex_group='interior')
+    splittable_boundary_vertices = find_splittable_vertices(tissue,vertex_group='boundary')
+    
+    if (len(splittable_vertices) > 0 or len(splittable_boundary_vertices) > 0):
+        return True
+    else:
+        return False
+    
+def single_interior_dbond_cells(tissue):
+    boundary_faces_IDs =  tissue.edge_df.loc[
+            tissue.edge_df['is_interior'] == False,'dbond_face'].unique()
+    
+    dbonds_boundary_faces = tissue.face_dbonds.loc[boundary_faces_IDs].values
+    
+    interior_dbonds_per_boundary_cell = \
+                    [tissue.edge_df.loc[dbonds_face,'is_interior'].sum()
+                     for dbonds_face in dbonds_boundary_faces]
+    
+    if 1 in interior_dbonds_per_boundary_cell:
+        return True
+    else:
+        return False
+    
+def are_elements_adjacent(positions,array_size):
+    
+    if len(positions) == 1:
+        return True
+    
+    adjacent_positions = [[[(pos-1)%array_size,(pos+1)%array_size]] for pos in positions]
+    
+    for pos_pair in adjacent_positions:
+        if True not in np.isin(pos_pair,positions):
+            return False
+      
+    return True
+
+def non_adjacent_boundary_dbonds_per_cell(tissue):
+    boundary_faces_IDs =  tissue.edge_df.loc[
+            tissue.edge_df['is_interior'] == False,'dbond_face'].unique()
+    
+    dbonds_boundary_faces = tissue.face_dbonds.loc[boundary_faces_IDs].values
+
+    boundary_dbonds_IDs = tissue.edge_df.loc[
+            tissue.edge_df['is_interior'] == False,'id'].values    
+
+    
+    for face_dbonds in dbonds_boundary_faces:
+        face_dbonds_ordered = np.array(face_dbonds)
+        is_boundary_dbonds = np.isin(face_dbonds,boundary_dbonds_IDs)
+
+        number_of_dbonds = len(face_dbonds_ordered)
+        false_positions = np.argwhere(is_boundary_dbonds == True).flatten()
+        
+        adjacent_bool = are_elements_adjacent(false_positions,number_of_dbonds)
+        
+        if not adjacent_bool:
+            return True
+              
+
+    return False

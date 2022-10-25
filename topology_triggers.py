@@ -1,6 +1,7 @@
 # import pandas as pd
 import numpy as np
 import warnings
+import math
 
 # from basic_topology import (collapse_edge,
 #                             simple_t1_rearrangement,rotate_T1_vertices,
@@ -8,10 +9,12 @@ import warnings
 
 from basic_topology import (collapse_edge,
                             simple_t1_rearrangement,rotate_T1_vertices,
-                            delete_cell,divide_cell)
+                            delete_cell,divide_cell,boundary_to_interior_t1_rearrangement,
+                            pure_boundary_t1_rearrangement)
 
 
 from vertex_stability import resolve_high_order_vertex
+from basic_geometry import dbond_axis_angle
 
 
 # def find_collapsable_edges(tissue):
@@ -354,6 +357,17 @@ def divide_large_cells(tissue,division_events):
             
         divide_cell(tissue,face_id)
     return
-    
+
+def generic_t1_rearrangement(tissue,dbond_id,dbond_t1_type):
+
+    if dbond_t1_type == 0:
+        simple_t1_rearrangement(tissue,dbond_id)
+        rotate_T1_vertices(tissue,dbond_id)
+    elif dbond_t1_type == 1:
+        boundary_to_interior_t1_rearrangement(tissue,dbond_id,scale_factor=0.2)
+    else:
+        pure_boundary_t1_rearrangement(tissue,dbond_id,scale_factor=0.1)
+        
+    return
     
 
