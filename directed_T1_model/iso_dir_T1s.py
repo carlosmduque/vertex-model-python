@@ -40,7 +40,7 @@ from IPython.display import clear_output
 
 def event_manager(
         tissue,t1_events,dt_save,dt_rectangle,
-        dt_two_fold_internal_vertex,dt_vertex_topology,
+        dt_round_off_boundary,dt_vertex_topology,
         save_path,clear_screen=True):
     
     if (t1_events % dt_save) == 0:     
@@ -50,8 +50,8 @@ def event_manager(
         
         save_datasets(file_path, tissue, mode='w')            
         
-    if (t1_events % dt_two_fold_internal_vertex) == 0:  
-        round_off_boundary(tissue)
+    # if (t1_events % dt_round_off_boundary) == 0:  
+    #     round_off_boundary(tissue)
         
     if (t1_events % dt_vertex_topology) == 0:     
         set_vertex_topology(tissue)
@@ -171,33 +171,47 @@ def generate_tissue_disk(N_disk):
     
     return tissue
 
-def propagate_tissue(tissue,rng,mu,sigma,
-                     dt_save,dt_rectangle,dt_round_off_boundary,dt_vertex_topology,
-                     save_path,number_of_cells,gtol,
-                     anisotropic_isotropic_ratio,number_of_t1_events_final):
+def propagate_tissue(tissue,rng,save_path,number_of_cells,check_point_if_possible=True,
+                     mu=0.0,sigma=0.9,
+                     dt_save=10,dt_rectangle=10,dt_round_off_boundary=10,dt_vertex_topology=10,
+                     gtol=1e-4,
+                     anisotropic_isotropic_ratio=0.5,number_of_t1_events_final=100):
     
-    collect_data_counter = 0
     number_of_collapsed_faces, number_of_collapsed_edges = 0, 0
+    df_file_path = os.path.join(save_path, 'data_df.h5')
     
-    column_names = ['l_min','l_max','aspect_ratio','box_angle',
+    if (check_point_if_possible and os.path.isfile(df_file_path)):
+        logging_df = pd.read_hdf(df_file_path, 'logging_df')
+        
+        tissue_path = save_path + '/tissue_active_t1.h5'      
+        tissue = load_tissue(tissue_path)
+        
+        collect_data_counter =  dt_save*logging_df.index[-1] + 1
+        
+    else:
+    
+        column_names = ['l_min','l_max','aspect_ratio','box_angle',
                 'tissue_area','tissue_perimeter','mean_cell_area','mean_cell_perimeter','mean_dbond_length',
                 'std_cell_area','std_cell_perimeter','std_dbond_length','tissue_energy','num_boundary_cells',
                 'num_collapsed_edges','num_collapsed_faces']
 
 
-    logging_df = pd.DataFrame(columns=column_names,dtype=float)
-    df_file_path = os.path.join(save_path, 'data_df.h5')  
+        logging_df = pd.DataFrame(columns=column_names,dtype=float)
+      
     
-    data_list = generate_data_list(tissue,number_of_collapsed_faces,
+        data_list = generate_data_list(tissue,number_of_collapsed_faces,
                                    number_of_collapsed_edges)
     
-    logging_data(logging_df,data_list,df_file_path)
+        logging_data(logging_df,data_list,df_file_path)
+        collect_data_counter = 0
     
     while (collect_data_counter < number_of_t1_events_final):
 
         try:
             
             tissue_checkpoint = deepcopy(tissue)
+            
+            round_off_boundary(tissue)
 
             event_manager(tissue,collect_data_counter,dt_save,dt_rectangle,
                 dt_round_off_boundary,dt_vertex_topology,save_path)
