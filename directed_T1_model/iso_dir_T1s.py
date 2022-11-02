@@ -207,56 +207,56 @@ def propagate_tissue(tissue,rng,save_path,number_of_cells,check_point_if_possibl
     
     while (collect_data_counter < number_of_t1_events_final):
 
-        try:
+        # try:
             
-            tissue_checkpoint = deepcopy(tissue)
-            
-            round_off_boundary(tissue)
+        tissue_checkpoint = deepcopy(tissue)
+        
+        round_off_boundary(tissue)
 
-            event_manager(tissue,collect_data_counter,dt_save,dt_rectangle,
-                dt_round_off_boundary,dt_vertex_topology,save_path)
+        event_manager(tissue,collect_data_counter,dt_save,dt_rectangle,
+            dt_round_off_boundary,dt_vertex_topology,save_path)
 
-            dbond_id, dbond_t1_type = directed_isotropic_bond(tissue,rng,mu=mu,sigma=sigma,
-                                    anisotropic_isotropic_ratio=anisotropic_isotropic_ratio)
+        dbond_id, dbond_t1_type = directed_isotropic_bond(tissue,rng,mu=mu,sigma=sigma,
+                                anisotropic_isotropic_ratio=anisotropic_isotropic_ratio)
 
-            print(f'Event number {collect_data_counter}, dbond_ID = {dbond_id}, T1 event type = {dbond_t1_type}')
+        print(f'Event number {collect_data_counter}, dbond_ID = {dbond_id}, T1 event type = {dbond_t1_type}')
 
-            generic_t1_rearrangement(tissue,dbond_id,dbond_t1_type)
+        generic_t1_rearrangement(tissue,dbond_id,dbond_t1_type)
 
-            min_success, num_collapsed_faces, num_collapsed_edges = \
-                                minimization_protocol(tissue,number_of_cells,gtol=gtol)
-
-
-            success = (min_success and (not high_order_vertices_remaining(tissue))
-                        and (not single_interior_dbond_cells(tissue))
-                        and (not non_adjacent_boundary_dbonds_per_cell(tissue))
-                        and (not tissue_self_intersect(tissue)))
+        min_success, num_collapsed_faces, num_collapsed_edges = \
+                            minimization_protocol(tissue,number_of_cells,gtol=gtol)
 
 
-            if (not success):
-                print('Reverting topology!')
-                tissue = deepcopy(tissue_checkpoint)
-            else:
-
-                collect_data_counter += 1
-                number_of_collapsed_faces += num_collapsed_faces
-                number_of_collapsed_edges += num_collapsed_edges
-
-                if (collect_data_counter % dt_save) == 0:
-
-                    data_list = generate_data_list(tissue,
-                            number_of_collapsed_faces,number_of_collapsed_edges)
-            
-                    logging_data(logging_df,data_list,df_file_path)
+        success = (min_success and (not high_order_vertices_remaining(tissue))
+                    and (not single_interior_dbond_cells(tissue))
+                    and (not non_adjacent_boundary_dbonds_per_cell(tissue))
+                    and (not tissue_self_intersect(tissue)))
 
 
-                    number_of_collapsed_faces, number_of_collapsed_edges = 0, 0
+        if (not success):
+            print('Reverting topology!')
+            tissue = deepcopy(tissue_checkpoint)
+        else:
+
+            collect_data_counter += 1
+            number_of_collapsed_faces += num_collapsed_faces
+            number_of_collapsed_edges += num_collapsed_edges
+
+            if (collect_data_counter % dt_save) == 0:
+
+                data_list = generate_data_list(tissue,
+                        number_of_collapsed_faces,number_of_collapsed_edges)
+        
+                logging_data(logging_df,data_list,df_file_path)
+
+
+                number_of_collapsed_faces, number_of_collapsed_edges = 0, 0
                                 
             
-        except:
-            print('An error occurred! reverting topology...')
-            tissue = deepcopy(tissue_checkpoint)
-            set_vertex_topology(tissue)
+        # except:
+        #     print('An error occurred! reverting topology...')
+        #     tissue = deepcopy(tissue_checkpoint)
+        #     set_vertex_topology(tissue)
             
     return
     
