@@ -183,7 +183,8 @@ def propagate_tissue(tissue,rng,save_path,number_of_cells,check_point_if_possibl
     if (check_point_if_possible and os.path.isfile(df_file_path)):
         logging_df = pd.read_hdf(df_file_path, 'logging_df')
         
-        tissue_path = save_path + '/tissue_active_t1.h5'      
+        # tissue_path = save_path + 'tissue_active_t1.h5'      
+        tissue_path = os.path.join(save_path, 'tissue_active_t1.h5')
         tissue = load_tissue(tissue_path)
         
         collect_data_counter =  dt_save*logging_df.index[-1] + 1
