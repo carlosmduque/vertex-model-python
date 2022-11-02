@@ -285,3 +285,12 @@ def non_adjacent_boundary_dbonds_per_cell(tissue):
               
 
     return False
+
+def floating_faces(tissue):
+    
+    bool_list =  [True in tissue.edge_df.loc[
+                    tissue.face_dbonds[face_id],'is_interior'].values
+                    for face_id in tissue.face_df['id'].values]
+    
+    
+    return (False in bool_list)
