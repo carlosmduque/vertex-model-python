@@ -189,7 +189,7 @@ def generate_dataframes(vert_positions,dir_edges_end_points,
 
     return vert_df, edge_df, face_df
 
-def generate_triangular_lattice(Lx, Ly):
+def generate_triangular_lattice(Lx, Ly,rotation='x'):
     """ Generates a set of points on the vertices of a triangular lattice.
         
         Parameters:
@@ -210,10 +210,17 @@ def generate_triangular_lattice(Lx, Ly):
     triang_lattice_points = []
 
     # Create triangular lattice
-    for i, y in enumerate(range(Ly)):
-        x_offset = (i % 2) * width/2
-        for x in range(Lx):
-            triang_lattice_points += [[x*width - x_offset, y*height]]
+    
+    if rotation == 'x':
+        for i, y in enumerate(range(Ly)):
+            x_offset = (i % 2) * width/2
+            for x in range(Lx):
+                triang_lattice_points += [[x*width - x_offset, y*height]]
+    else:        
+        for i, x in enumerate(range(Lx)):
+            y_offset = (i % 2) * width/2
+            for y in range(Ly):
+                triang_lattice_points += [[x*height, y*width - y_offset]]
 
     return np.array(triang_lattice_points)
 
@@ -258,7 +265,7 @@ def get_closed_regions(vor_region):
     return hexagonal_vertices, hexagonal_faces
 
 
-def generate_honeycomb_patch(Lx=10, Ly=10):
+def generate_honeycomb_patch(Lx=10, Ly=10,rotation='x'):
     """ Generates a honeycomb lattice by calculating the Voronoi region
         of a list of points on the vertices of a triangular lattice.
         
@@ -280,7 +287,8 @@ def generate_honeycomb_patch(Lx=10, Ly=10):
     """
 
     # We need to compensate for the boundaries faces by adding + 2.
-    triang_lattice_points = generate_triangular_lattice(Lx+2, Ly+2)
+    triang_lattice_points = generate_triangular_lattice(Lx+2, Ly+2,
+                                                        rotation=rotation)
 
     # The Voronoi region of the triangular lattice is a honeycomb.
     vor_region = Voronoi(triang_lattice_points)
