@@ -1,7 +1,0 @@
-.gitignore
-.DS_Store
-__pycache__/
-Vertex_Model_Python.code-workspace
-*/__pycache__/
-*~
-*/__pycache__
