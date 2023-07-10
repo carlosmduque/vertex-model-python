@@ -351,13 +351,13 @@ def get_face_ordered_dbonds(tissue,face_list=[]):
     # smaller (face, edge_id) groups.
 
     if face_list == []:
-        face_groups = tissue.edge_df.groupby(['dbond_face'])
+        face_groups = tissue.edge_df.groupby('dbond_face')
         face_bond_groups = tissue.edge_df.groupby(['dbond_face','id'])
     else:
         edge_df_subset = \
                 tissue.edge_df[tissue.edge_df['dbond_face'].isin(face_list)]
 
-        face_groups = edge_df_subset.groupby(['dbond_face'])
+        face_groups = edge_df_subset.groupby('dbond_face')
         face_bond_groups = edge_df_subset.groupby(['dbond_face','id'])
 
 
