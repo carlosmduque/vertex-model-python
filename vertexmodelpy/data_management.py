@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-from tissue import Tissue
+from .tissue import Tissue
 
 def load_datasets(h5store, data_names=["vert_df", "edge_df", "face_df"]):
     if not os.path.isfile(h5store):

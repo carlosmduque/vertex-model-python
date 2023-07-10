@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from utilities import find_ordered_vertex_dbonds
-from basic_topology import split_vertex,split_boundary_vertex,add_triangular_face_at_boundary,delete_cell
+from .utilities import find_ordered_vertex_dbonds
+from .basic_topology import split_vertex,split_boundary_vertex,add_triangular_face_at_boundary,delete_cell
 
 # from energetics import vertex_stability
 

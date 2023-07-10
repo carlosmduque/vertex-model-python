@@ -4,7 +4,7 @@ import numpy as np
 import scipy as sp
 
 from scipy.spatial import ConvexHull, cKDTree
-from topology_triggers import find_splittable_vertices
+from .topology_triggers import find_splittable_vertices
 
 
 def bounding_rectangle(boundary_vertices,return_corners=False):

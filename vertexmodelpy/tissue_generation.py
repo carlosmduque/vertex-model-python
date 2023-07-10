@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 from scipy.spatial import Voronoi
 
-from utilities import range_to_list_dict, list_to_range_dict, add_constant_columns_to_df
+from .utilities import range_to_list_dict, list_to_range_dict, add_constant_columns_to_df
 
-from basic_geometry import pol_area, pol_perimeter, pol_centroid, euclidean_distance
+from .basic_geometry import pol_area, pol_perimeter, pol_centroid, euclidean_distance
 
 import math
 

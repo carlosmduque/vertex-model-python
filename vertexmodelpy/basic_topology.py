@@ -2,15 +2,15 @@
 import numpy as np
 import warnings
 
-from utilities import (delete_integer_from_nparray,get_face_ordered_dbonds,
+from .utilities import (delete_integer_from_nparray,get_face_ordered_dbonds,
                 add_vertex_to_df,add_dir_edge_to_df,add_face_to_df,
                 find_face_vertices)
 
-from basic_geometry import (rotation_2d,vertex_to_centroid,displace_vertex,
+from .basic_geometry import (rotation_2d,vertex_to_centroid,displace_vertex,
                             positive_quadrant_angle)
 from math import pi
 
-from basic_geometry import (pol_centroid,pol_perimeter,line_axis_intersection_point)
+from .basic_geometry import (pol_centroid,pol_perimeter,line_axis_intersection_point)
 
 # from energetics import vertex_stability
 # from vertex_stability import vertex_stability

@@ -6,8 +6,8 @@ import numpy as np
 
 from scipy.optimize import minimize, OptimizeResult
 
-from basic_topology import *
-from topology_triggers import *
+from .basic_topology import *
+from .topology_triggers import *
 
 # log = logging.getLogger(__name__)
 

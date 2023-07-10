@@ -1,8 +1,8 @@
 import numpy as np
 import math
 
-from basic_geometry import dbond_axis_angle
-from topology_triggers import t1_able_edges
+from .basic_geometry import dbond_axis_angle
+from .topology_triggers import t1_able_edges
 
     
  

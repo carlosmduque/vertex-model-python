@@ -21,6 +21,7 @@ setuptools.setup(
     long_description_content_type = "text/markdown",
     url = "https://github.com/carlosmduquej/vertex-model-python",
     packages=setuptools.find_packages(),
+    # packages=['vertexmodelpy'],
     classifiers = [
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

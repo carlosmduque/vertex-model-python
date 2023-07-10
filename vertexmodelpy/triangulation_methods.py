@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 from itertools import chain
-from utilities import list_to_range_dict,find_ordered_vertex_faces,generate_directed_edges_topology
-from basic_geometry import euclidean_distance,pol_area,pol_centroid,pol_perimeter
+from .utilities import list_to_range_dict,find_ordered_vertex_faces,generate_directed_edges_topology
+from .basic_geometry import euclidean_distance,pol_area,pol_centroid,pol_perimeter
 
 
 def reindexed_face_vertices(tissue):

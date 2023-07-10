@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from  basic_topology import *
+from  .basic_topology import *
 
 def area_energy(tissue):
     cell_areas = tissue.face_df['area']

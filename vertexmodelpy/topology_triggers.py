@@ -7,14 +7,14 @@ import math
 #                             simple_t1_rearrangement,rotate_T1_vertices,
 #                             delete_cell,resolve_high_order_vertex)
 
-from basic_topology import (collapse_edge,
+from .basic_topology import (collapse_edge,
                             simple_t1_rearrangement,rotate_T1_vertices,
                             delete_cell,divide_cell,boundary_to_interior_t1_rearrangement,
                             pure_boundary_t1_rearrangement)
 
 
-from vertex_stability import resolve_high_order_vertex
-from basic_geometry import dbond_axis_angle
+from .vertex_stability import resolve_high_order_vertex
+from .basic_geometry import dbond_axis_angle
 
 
 # def find_collapsable_edges(tissue):

@@ -5,50 +5,51 @@
 import numpy as np
 import pandas as pd
 
-from utilities import *
-from basic_geometry import (euclidean_distance,
+import matplotlib.pyplot as plt
+from matplotlib.collections import LineCollection
+
+from .utilities import *
+from .basic_geometry import (pol_area, pol_centroid, pol_perimeter, euclidean_distance,
                             pol_area_faster,pol_perimeter_faster,
-                            pol_centroid_faster,triangle_centroid_faster,
-                            calculate_triangle_state_tensor_symmetric_antisymmetric,
-                            triangulation_Q_norm)
-
-from basic_topology import set_vertex_topology
-
-from triangulation_methods import initialize_triangulation
+                            pol_centroid_faster,triangle_centroid_faster)
+from .basic_topology import set_vertex_topology
 
 
-class Triangulation():
+class Tissue():
     # Our collection of cells, edges, and vertices along with functions
 
-    def __init__(self, tissue,triangulation_type='dual_triangulation'):
+    def __init__(self, vert_df, edge_df, face_df, face_dbonds=[],
+                 normalize_area=True):
     # def __init__(self, vert_df, edge_df, face_df):
 
-        self.tissue = tissue
-        self.triangulation_type = triangulation_type
-        
-        self.coord_labels = ['x','y']
-        
-        vert_df, edge_df, face_df, face_dbonds, face_verts = \
-            initialize_triangulation(
-                    self.tissue,triangulation_type=self.triangulation_type)
-        
         self.vert_df = vert_df
         self.edge_df = edge_df
         self.face_df = face_df
-        self.face_dbonds = face_dbonds
-        self.face_verts = face_verts
 
+        if face_dbonds == []:
+            self.reset_dbonds_per_face()
+        else:
+            self.face_dbonds = pd.Series(face_dbonds)
+
+        self.coord_labels = ['x','y']
 
         self.num_vertices = len(vert_df)
         self.num_edges = len(edge_df)
         self.num_faces = len(face_df)
         
+        self.t1_cutoff = 1e-4#1e-6
+        self.t1_boundary_cutoff = 1e-4
+        self.t2_cutoff = 1e-4
+
+        # self.reset_dbonds_per_face()
+        if normalize_area:
+            self.normalize_tissue(area_normalization=0.5756985420555952)
             
         self.reset_vertex_topology()
-        self.triangle_side_vectors()
-        self.state_tensor()
 
-    
+         # Time step tracker
+        self.step = 0
+
     def reset_dbonds_per_face(self):
         get_face_ordered_dbonds(self)
         return
@@ -109,8 +110,6 @@ class Triangulation():
                 else:
                     centroid_list = \
                             triangle_centroid_faster(same_num_sides_vert_pos)
-                # centroid_list = \
-                #             triangle_centroid_faster(same_num_sides_vert_pos)
                     
                 self.face_df.loc[face_ids,self.coord_labels] = centroid_list
             
@@ -157,66 +156,52 @@ class Triangulation():
                         self.vert_df[self.coord_labels]
 
         self.update_tissue_geometry()
-
+        
         return
+        
+    def tissue_area_perimeter(self):
+        
+        tissue_area = self.face_df['area'].sum()
+        tissue_perimeter = self.edge_df.loc[
+                        self.edge_df['is_interior'] == False,'length'].sum()
+        
+        return tissue_area, tissue_perimeter
     
-    def triangle_side_vectors(self):
+    def mean_geometrical_quantities(self,return_std=False):
+        
+        mean_cell_area = self.face_df['area'].mean()
+        mean_cell_perimeter = self.face_df['perimeter'].mean()
     
-        triangulation_verts = self.vert_df[['x','y']].values
-        face_vertices = np.array([triangulation_verts[triang_vert_ids]
-                        for triang_vert_ids in self.face_verts])
-        
-        side_vectors = np.roll(face_vertices,-1,axis=1) - face_vertices
-        side_vectors_21, side_vectors_32 = side_vectors[:,0], side_vectors[:,1]
-        
-        side_vectors_21_x, side_vectors_21_y = side_vectors_21[:,0], side_vectors_21[:,1]
-        side_vectors_32_x, side_vectors_32_y = side_vectors_32[:,0], side_vectors_32[:,1]
-        
-        self.face_df['dr_21_x'] = side_vectors_21_x
-        self.face_df['dr_21_y'] = side_vectors_21_y
-        self.face_df['dr_32_x'] = side_vectors_32_x
-        self.face_df['dr_32_y'] = side_vectors_32_y
-    
-        return
-    
-    def state_tensor(self,A_0=1.0):
-        state_tensor = \
-            calculate_triangle_state_tensor_symmetric_antisymmetric(self,A_0=A_0)
-            
-        # self.face_df[['theta','AabsSq','twophi','BabsSq',]] = state_tensor
-        AabsSq, BabsSq = state_tensor[:,1], state_tensor[:,3]
-        Q_norms = triangulation_Q_norm(AabsSq, BabsSq)
-        
-        theta, twophi = state_tensor[:,0], state_tensor[:,2]
-        
-        self.face_df['theta'] = theta
-        self.face_df['twophi'] = twophi
-        self.face_df['elong_tensor_norm'] = Q_norms
-        
-        cos_two_phi, sin_two_phi = np.cos(twophi), np.sin(twophi)
-        
-        
-        q_xx, q_xy = Q_norms * cos_two_phi, Q_norms * sin_two_phi
-        
-        
-        q_row_0, q_row_1 = np.dstack((q_xx,q_xy)), np.dstack((q_xy,-q_xx))
-
-        triangle_elongation_tensor = np.stack((q_row_0,q_row_1),axis=2)[0]
-        
-        # cos_theta, sin_theta = np.cos(-theta), np.sin(-theta)
-        # r_xx, r_xy = cos_theta, sin_theta
-        # rot_row_0 = np.dstack((r_xx,-r_xy))
-        # rot_row_1 = np.dstack((r_xy,r_xx))
-
-        # rotation_matrix_z_axis = np.stack((rot_row_0,rot_row_1),axis=2)[0]
-        
-        # triangle_elongation_tensor = triangle_elongation_tensor @ rotation_matrix_z_axis
-        
+        dbond_conj_dbond_pairs = self.edge_df.loc[
+                    self.edge_df['is_interior'] == True, ['id','conj_dbond']].values
                
-        # return triangle_elongation_tensor, rotation_matrix_z_axis
-        return triangle_elongation_tensor
+        unrepeated_interior_edge_indices = np.unique(
+                    np.sort(dbond_conj_dbond_pairs)[:,0])
+        
+        boundary_edge_indices = self.edge_df.loc[
+                    self.edge_df['is_interior'] == False,'id'].values
+
+        dbond_indices_unrepeated = np.concatenate(
+                    (unrepeated_interior_edge_indices,boundary_edge_indices))
+        
+        mean_dbond_length = self.edge_df.loc[
+                                    dbond_indices_unrepeated,'length'].mean()
+        
+        mean_geometrical_data = [mean_cell_area,mean_cell_perimeter,
+                                        mean_dbond_length]
+        
+        if return_std:
+            std_cell_area = self.face_df['area'].std(ddof=0)
+            std_cell_perimeter = self.face_df['perimeter'].std(ddof=0)
+            std_dbond_length = self.edge_df.loc[
+                        dbond_indices_unrepeated,'length'].std(ddof=0)
             
+            std_geometrical_data = [std_cell_area,std_cell_perimeter,
+                                        std_dbond_length]
+            
+            return mean_geometrical_data, std_geometrical_data
         
-    
-        
+        else:
+            return mean_geometrical_data
+                  
        
