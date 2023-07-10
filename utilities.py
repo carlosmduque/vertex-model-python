@@ -453,7 +453,7 @@ def get_face_colors(tissue,color_by='area',min_max_vals=[]):
     return facecolors
 
 
-
+#checked mirrorin
 
 # def get_face_ordered_dbonds(edge_df):
 #     """ Calculate the ordered indices of the edges surrounding the
