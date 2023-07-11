@@ -1,10 +1,7 @@
 # Vertex Model
 
 
-![](fig_vertex_model.png)
-
-
-
+<!--- ![](fig_vertex_model.png) -->
 A repository holding the structure for the 'intertwined' package as well examples and galleries.
 
 
