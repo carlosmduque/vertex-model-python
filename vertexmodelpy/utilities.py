@@ -423,7 +423,7 @@ def find_ordered_vertex_faces(tissue,vert_id):
     
     return vert_faces
 
-def get_face_colors(tissue,color_by='area',min_max_vals=[]):
+def get_face_colors(tissue,color_by='area',min_max_vals=[],color_map=cm.jet):
     
     if color_by == 'area':
         if min_max_vals == []:
@@ -449,7 +449,7 @@ def get_face_colors(tissue,color_by='area',min_max_vals=[]):
         
     normalized_areas = normalized_areas.values
 
-    facecolors = [cm.jet(x) for x in normalized_areas]
+    facecolors = [color_map(x) for x in normalized_areas]
     return facecolors
 
 
