@@ -2,9 +2,11 @@ import numpy as np
 import pandas as pd
 from scipy.spatial import Voronoi
 
-from .utilities import range_to_list_dict, list_to_range_dict, add_constant_columns_to_df
+from .utilities import (range_to_list_dict, list_to_range_dict,
+                        add_constant_columns_to_df,generate_directed_edges_topology)
 
 from .basic_geometry import pol_area, pol_perimeter, pol_centroid, euclidean_distance
+from .tissue import Tissue
 
 import math
 
@@ -499,3 +501,20 @@ def generate_hexagonal_disk(num_t, radius=1):
     dir_edges_end_points = range_to_list_dict(dir_edges_end_points)
 
     return hexagonal_vertices, dir_edges_end_points, hexagonal_faces
+
+def convert_to_tissue_class(tissue_generating_func,*args,**kwargs):
+    (vertex_positions, dir_edges_end_points, polygonal_cells) = \
+                                            tissue_generating_func(*args,**kwargs)
+                                            
+    face_dbonds, face_per_directed_edge, \
+        left_edge_index, right_edge_index, conjugate_edge_index = \
+        generate_directed_edges_topology(dir_edges_end_points,polygonal_cells)
+
+    vert_df, edge_df, face_df \
+        = generate_dataframes(vertex_positions,dir_edges_end_points,
+                        face_per_directed_edge,left_edge_index,
+                        right_edge_index,conjugate_edge_index,polygonal_cells)
+        
+    tissue  = Tissue(vert_df, edge_df, face_df, face_dbonds)
+    
+    return tissue
