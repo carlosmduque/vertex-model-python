@@ -62,7 +62,7 @@ class Tissue():
                 geometry_quantities=['area','perimeter','centroid','length']):
              
         if face_list == []:
-            face_verts = find_face_vertices_faster(self,self.face_dbonds)
+            face_verts = find_face_vertices_faster(self)
             
             vert_positions_df = pd.Series(face_verts,
                                 index=self.face_df.index,dtype=object)
