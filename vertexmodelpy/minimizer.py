@@ -28,8 +28,7 @@ class TissueMinimizer:
     """
 
     def __init__(self,tissue,ener_function,grad_function,
-                    with_t1=False,with_t3=False,
-                    minimization_method='CG',gtol=1e-05):
+                 minimization_method='CG',gtol=1e-05):
         """Creates a quasistatic gradient descent solver with optional
         type1, type3 and collision detection and solving routines.
 
@@ -63,7 +62,6 @@ class TissueMinimizer:
         # self.x0_1d = self.x_1d
         
         self.restart = True
-        self.rearange = with_t1 or with_t3
         
         self.res = OptimizeResult()
         self.res.success = False
