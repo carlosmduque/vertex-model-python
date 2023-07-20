@@ -112,7 +112,7 @@ def find_face_vertices(tissue,face_dbonds,single_face=False):
 
     return face_verts
 
-def find_face_vertices_faster(tissue,face_dbonds,return_positions=True):
+def find_face_vertices_faster(tissue,return_positions=True):
     """[summary]
 
     Args:
@@ -123,6 +123,7 @@ def find_face_vertices_faster(tissue,face_dbonds,return_positions=True):
         [type]: [description]
     """
     
+    face_dbonds = tissue.face_dbonds
     vert_positions = tissue.vert_df[tissue.coord_labels]
     v_out_series = tissue.edge_df['v_out_id']
     
@@ -428,7 +429,7 @@ def get_face_colors(tissue,color_by='area',min_max_vals=[],color_map=cm.jet):
     if color_by == 'area':
         if min_max_vals == []:
             min_area = tissue.face_df['area'].min()
-            max_area = tissue.face_df['area'].max()
+            max_area = tissue.face_df['area'].max() + 1e-8
         else:
             min_area, max_area = min_max_vals
         
@@ -438,7 +439,7 @@ def get_face_colors(tissue,color_by='area',min_max_vals=[],color_map=cm.jet):
     elif color_by == 'num_sides':
         if min_max_vals == []:
             min_num_sides = tissue.face_df['num_sides'].min()
-            max_num_sides = tissue.face_df['num_sides'].max()
+            max_num_sides = tissue.face_df['num_sides'].max() + 1e-8
         else:
             min_num_sides, max_num_sides = min_max_vals
         
