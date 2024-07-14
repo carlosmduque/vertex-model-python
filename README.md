@@ -10,12 +10,6 @@ The module 'vertexmodelpy' is a pure python implementation of the vertex model o
 
 ## Installation
 
-Via PyPi
-
-```sh
-pip install vertexmodelpy
-```
-
 Via Cloning
 
 ```sh
