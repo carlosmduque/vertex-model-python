@@ -24,21 +24,6 @@ git clone https://github.com/carlosmduque/vertex-model-python.git .
 pip install ./vertexmodelpy/
 ```
 
-## Usage
-
-For theory and algorithm details see publication: [Farhadifar et. al.](https://www.sciencedirect.com/science/article/pii/S0960982207023342)
-
-```sh
-import numpy as np
-```
-
-The package also allows you to directly
-
-```text
-
-
-```
-
 ## Requirements
 
 ```sh
