@@ -16,7 +16,7 @@ setuptools.setup(
     version = "0.0.1",
     author = "carlosmduquej",
     author_email = "carlosmduquej@gmail.com",
-    description = "A Python repository of a free boundary implementing of the tissue mechanics vertex model",
+    description = "A Python repository of a free boundary implemention of the tissue mechanics vertex model",
     long_description = long_description,
     long_description_content_type = "text/markdown",
     url = "https://github.com/carlosmduquej/vertex-model-python",
