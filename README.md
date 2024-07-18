@@ -7,7 +7,7 @@ A repository containing the structure for the `vertexmodelpy` package, along wit
 
 ## Introduction
 
-The `vertexmodelpy` module is a pure Python implementation of the vertex model originally introduced by [Farhadifar et al.](https://www.sciencedirect.com/science/article/pii/S0960982207023342). This model is commonly used to simulate the mechanics of epithelia. Currently, this implementation supports tissue packings with open and free-to-deform boundaries. Future releases will include periodic boundary conditions (PBC) and the ability to simulate shear stress.
+The `vertexmodelpy` module is a pure Python implementation of the vertex model originally introduced by [Farhadifar et al.](https://www.sciencedirect.com/science/article/pii/S0960982207023342). This model is commonly used to simulate the mechanics of epithelia. Currently, this implementation supports tissue packings with open and free-to-deform boundaries. Future releases might include periodic boundary conditions (PBC) and the ability to simulate shear stress.
 
 ## Installation
 
@@ -30,12 +30,12 @@ To install the package, follow these steps:
     pip install .
     ```
 
-## Requirements
+<!-- ## Requirements
 
 The following Python packages are required and will be installed from `requirements.txt`:
 - `numpy==1.21.0`
 - `scipy==1.7.3`
-- `pandas==1.5.3`
+- `pandas==1.5.3` -->
 
 ## Acknowledgements
 
